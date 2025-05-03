@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Diagnosis{% endblock %}
+
+{% block body %}
+    <h1>Diagnosis</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ diagnosi.id }}</td>
+            </tr>
+            <tr>
+                <th>Description</th>
+                <td>{{ diagnosi.description }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_diagnosis_index') }}">back to list</a>
+
+    <a href="{{ path('app_diagnosis_edit', {'id': diagnosi.id}) }}">edit</a>
+
+    {{ include('diagnosis/_delete_form.html.twig') }}
+{% endblock %}

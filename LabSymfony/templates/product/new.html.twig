@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Create Product{% endblock %}
+
+{% block body %}
+    <h1>Create New Product</h1>
+
+    <form id="createForm">
+        <input type="text" name="name" placeholder="Name" required><br><br>
+        <input type="number" name="price" placeholder="Price" step="0.01" required><br><br>
+        <textarea name="description" placeholder="Description" required></textarea><br><br>
+        <button type="submit">Create</button>
+    </form>
+
+    <pre id="result"></pre>
+
+    <script>
+        const form = document.getElementById('createForm');
+        const result = document.getElementById('result');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+
+            const response = await fetch('{{ path("product_new") }}', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data),
+            });
+
+            const json = await response.json();
+            result.textContent = JSON.stringify(json, null, 2);
+        });
+    </script>
+{% endblock %}
