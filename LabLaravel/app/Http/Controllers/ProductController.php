@@ -2,31 +2,36 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ProductController extends Controller
 {
-    // Статичний масив продуктів для тестування (без підключення до бази даних)
-    private static array $products = [];
-    private static int $nextId = 1;
-
     public function __construct()
     {
-        if (empty(self::$products)) {
-            self::$products = [
-                1 => ['id' => 1, 'name' => 'Laptop', 'price' => 999.99, 'description' => 'High-performance laptop'],
-                2 => ['id' => 2, 'name' => 'Smartphone', 'price' => 599.99, 'description' => 'Latest model'],
-                3 => ['id' => 3, 'name' => 'Headphones', 'price' => 199.99, 'description' => 'Wireless headphones'],
-            ];
-            self::$nextId = 4;
-        }
+        $this->middleware('auth');
+
+        $this->middleware(function ($request, $next) {
+            $user = auth()->user();
+
+            $restrictedRoutes = ['newProductForm', 'store', 'editProductForm', 'update', 'destroy'];
+            if (in_array($request->route()->getActionMethod(), $restrictedRoutes)) {
+                if (!$user->isManager() && !$user->isAdmin()) {
+                    abort(403, 'Access denied');
+                }
+            }
+
+            return $next($request);
+        });
     }
 
-    // Показати всі продукти
     public function index()
     {
-        return view('products.index', ['products' => self::$products]);
+        $products = Product::all();
+        return view('products.index', ['products' => $products]);
     }
+
     public function newProductForm()
     {
         return view('products.create');
@@ -40,21 +45,19 @@ class ProductController extends Controller
             'description' => 'required|string|max:1000',
         ]);
 
-        $product = [
-            'id' => self::$nextId++,
-            'name' => $data['name'],
-            'price' => (float)$data['price'],
-            'description' => $data['description']
-        ];
-
-        self::$products[$product['id']] = $product;
+        $product = new Product();
+        $product->name = $data['name'];
+        $product->price = $data['price'];
+        $product->description = $data['description'];
+        $product->user_id = Auth::id();
+        $product->save();
 
         return redirect()->route('products.index');
     }
 
     public function show($id)
     {
-        $product = $this->findProductById($id);
+        $product = Product::find($id);
 
         if (!$product) {
             return response()->json(['error' => 'Product not found'], 404);
@@ -65,7 +68,7 @@ class ProductController extends Controller
 
     public function editProductForm($id)
     {
-        $product = $this->findProductById($id);
+        $product = Product::find($id);
 
         if (!$product) {
             return response()->json(['error' => 'Product not found'], 404);
@@ -74,9 +77,10 @@ class ProductController extends Controller
         return view('products.edit', ['product' => $product]);
     }
 
+    // Оновлення продукту
     public function update(Request $request, $id)
     {
-        $product = $this->findProductById($id);
+        $product = Product::find($id);
 
         if (!$product) {
             return response()->json(['error' => 'Product not found'], 404);
@@ -88,31 +92,26 @@ class ProductController extends Controller
             'description' => 'required|string|max:1000',
         ]);
 
-        self::$products[$id] = [
-            'id' => $id,
+        $product->update([
             'name' => $data['name'],
-            'price' => (float)$data['price'],
-            'description' => $data['description']
-        ];
+            'price' => $data['price'],
+            'description' => $data['description'],
+        ]);
 
         return redirect()->route('products.index');
     }
 
     public function destroy($id)
     {
-        $product = $this->findProductById($id);
+        $product = Product::find($id);
 
         if (!$product) {
             return response()->json(['error' => 'Product not found'], 404);
         }
 
-        unset(self::$products[$id]);
+        $product->delete();
 
         return redirect()->route('products.index');
     }
-
-    private function findProductById($id)
-    {
-        return self::$products[$id] ?? null;
-    }
 }
+

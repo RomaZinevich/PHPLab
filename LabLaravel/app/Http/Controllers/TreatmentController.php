@@ -16,7 +16,7 @@ class TreatmentController extends Controller
             $query->where('name', 'like', '%' . $request->name . '%');
         }
 
-        $treatments = $query->paginate($request->get('itemsPerPage', 10));  // За замовчуванням 10 елементів на сторінці
+        $treatments = $query->paginate($request->get('itemsPerPage', 10));
 
         return view('treatments.index', compact('treatments'));
     }

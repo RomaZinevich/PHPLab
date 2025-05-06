@@ -1,26 +1,26 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Product</title>
-</head>
-<body>
-<h1>Create a New Product</h1>
+@extends('layouts.app1')
 
-<form action="{{ url('/products') }}" method="POST">
-    @csrf
+@section('content')
+    <div class="container">
+        <h2>Створити новий продукт</h2>
+        <form method="POST" action="{{ route('products.store') }}">
+            @csrf
+            <div class="form-group">
+                <label for="name">Назва продукту</label>
+                <input type="text" class="form-control" id="name" name="name" value="{{ old('name') }}" required>
+            </div>
 
-    <label for="name">Product Name:</label>
-    <input type="text" id="name" name="name" required><br><br>
+            <div class="form-group">
+                <label for="price">Ціна</label>
+                <input type="number" class="form-control" id="price" name="price" value="{{ old('price') }}" required>
+            </div>
 
-    <label for="price">Price:</label>
-    <input type="number" id="price" name="price" required step="0.01"><br><br>
+            <div class="form-group">
+                <label for="description">Опис</label>
+                <textarea class="form-control" id="description" name="description" rows="3" required>{{ old('description') }}</textarea>
+            </div>
 
-    <label for="description">Description:</label>
-    <textarea id="description" name="description" required></textarea><br><br>
-
-    <button type="submit">Create Product</button>
-</form>
-</body>
-</html>
+            <button type="submit" class="btn btn-primary">Створити продукт</button>
+        </form>
+    </div>
+@endsection

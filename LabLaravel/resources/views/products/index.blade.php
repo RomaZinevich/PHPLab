@@ -1,28 +1,37 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>All Products</title>
-</head>
-<body>
-<h1>All Products</h1>
+@extends('layouts.app1')
 
-<a href="{{ route('products.create') }}">Create New Product</a>
+@section('content')
+    <div class="container">
+        <h2>Продукти</h2>
+        <a href="{{ route('products.create') }}" class="btn btn-primary mb-3">Додати новий продукт</a>
 
-<ul>
-    @foreach($products as $product)
-        <li>
-            <a href="{{ url('/products/' . $product['id']) }}">{{ $product['name'] }}</a> -
-            ${{ number_format($product['price'], 2) }}
-            <a href="{{ url('/products/' . $product['id'] . '/edit') }}">Edit</a>
-            <form action="{{ url('/products/' . $product['id']) }}" method="POST" style="display:inline;">
-                @method('DELETE')
-                @csrf
-                <button type="submit">Delete</button>
-            </form>
-        </li>
-    @endforeach
-</ul>
-</body>
-</html>
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Назва</th>
+                <th scope="col">Ціна</th>
+                <th scope="col">Дії</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach ($products as $product)
+                <tr>
+                    <td>{{ $product->id }}</td>
+                    <td>{{ $product->name }}</td>
+                    <td>{{ $product->price }}</td>
+                    <td>
+                        <a href="{{ route('products.show', $product->id) }}" class="btn btn-info">Переглянути</a>
+                        <a href="{{ route('products.edit', $product->id) }}" class="btn btn-warning">Редагувати</a>
+                        <form action="{{ route('products.destroy', $product->id) }}" method="POST" style="display:inline-block;">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-danger">Видалити</button>
+                        </form>
+                    </td>
+                </tr>
+            @endforeach
+            </tbody>
+        </table>
+    </div>
+@endsection

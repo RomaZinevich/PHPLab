@@ -1,27 +1,28 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Product</title>
-</head>
-<body>
-<h1>Edit Product</h1>
+@extends('layouts.app1')
 
-<form action="{{ url('/products/' . $product['id']) }}" method="POST">
-    @method('PUT')
-    @csrf
+@section('content')
+    <div class="container">
+        <h2>Редагувати продукт</h2>
+        <form method="POST" action="{{ route('products.update', $product->id) }}">
+            @csrf
+            @method('PUT')
 
-    <label for="name">Product Name:</label>
-    <input type="text" id="name" name="name" value="{{ $product['name'] }}" required><br><br>
+            <div class="form-group">
+                <label for="name">Назва продукту</label>
+                <input type="text" class="form-control" id="name" name="name" value="{{ old('name', $product->name) }}" required>
+            </div>
 
-    <label for="price">Price:</label>
-    <input type="number" id="price" name="price" value="{{ $product['price'] }}" required step="0.01"><br><br>
+            <div class="form-group">
+                <label for="price">Ціна</label>
+                <input type="number" class="form-control" id="price" name="price" value="{{ old('price', $product->price) }}" required>
+            </div>
 
-    <label for="description">Description:</label>
-    <textarea id="description" name="description" required>{{ $product['description'] }}</textarea><br><br>
+            <div class="form-group">
+                <label for="description">Опис</label>
+                <textarea class="form-control" id="description" name="description" rows="3" required>{{ old('description', $product->description) }}</textarea>
+            </div>
 
-    <button type="submit">Update Product</button>
-</form>
-</body>
-</html>
+            <button type="submit" class="btn btn-primary">Оновити продукт</button>
+        </form>
+    </div>
+@endsection

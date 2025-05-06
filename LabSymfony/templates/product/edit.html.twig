@@ -5,38 +5,10 @@
 {% block body %}
     <h1>Edit Product</h1>
 
-    <form id="editForm">
-        <input type="number" name="id" placeholder="Product ID" required><br><br>
-        <input type="text" name="name" placeholder="Name" required><br><br>
-        <input type="number" name="price" placeholder="Price" step="0.01" required><br><br>
-        <textarea name="description" placeholder="Description" required></textarea><br><br>
-        <button type="submit">Update</button>
-    </form>
+    {{ form_start(form) }}
+    {{ form_widget(form) }}
+    <button class="btn btn-primary mt-3">Save Changes</button>
+    {{ form_end(form) }}
 
-    <pre id="result"></pre>
-
-    <script>
-        const form = document.getElementById('editForm');
-        const result = document.getElementById('result');
-
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const formData = new FormData(form);
-            const id = formData.get('id');
-            const data = {
-                name: formData.get('name'),
-                price: formData.get('price'),
-                description: formData.get('description')
-            };
-
-            const response = await fetch(`/api/products/${id}/edit`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data),
-            });
-
-            const json = await response.json();
-            result.textContent = JSON.stringify(json, null, 2);
-        });
-    </script>
+    <a href="{{ path('product_index') }}" class="btn btn-secondary mt-2">Back to list</a>
 {% endblock %}
