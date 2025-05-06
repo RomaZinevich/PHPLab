@@ -11,6 +11,8 @@
       <sourceFolder url="file://$MODULE_DIR$/LabSymfony/src" isTestSource="false" packagePrefix="App\" />
       <sourceFolder url="file://$MODULE_DIR$/LabSymfony/tests" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/LabSymfony/tests" isTestSource="true" packagePrefix="App\Tests\" />
+      <sourceFolder url="file://$MODULE_DIR$/spec" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/tests" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/LabLaravel/vendor/brick/math" />
       <excludeFolder url="file://$MODULE_DIR$/LabLaravel/vendor/carbonphp/carbon-doctrine-types" />
       <excludeFolder url="file://$MODULE_DIR$/LabLaravel/vendor/composer" />
@@ -257,6 +259,8 @@
       <excludeFolder url="file://$MODULE_DIR$/LabSymfony/vendor/twig/extra-bundle" />
       <excludeFolder url="file://$MODULE_DIR$/LabSymfony/vendor/twig/twig" />
       <excludeFolder url="file://$MODULE_DIR$/LabSymfony/vendor/webmozart/assert" />
+      <excludeFolder url="file://$MODULE_DIR$/LabSymfony/vendor/knplabs/knp-components" />
+      <excludeFolder url="file://$MODULE_DIR$/LabSymfony/vendor/knplabs/knp-paginator-bundle" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

@@ -258,6 +258,8 @@
       <path value="$PROJECT_DIR$/LabSymfony/vendor/symfony/intl" />
       <path value="$PROJECT_DIR$/LabSymfony/vendor/symfony/mailer" />
       <path value="$PROJECT_DIR$/LabSymfony/vendor/symfony/maker-bundle" />
+      <path value="$PROJECT_DIR$/LabSymfony/vendor/knplabs/knp-components" />
+      <path value="$PROJECT_DIR$/LabSymfony/vendor/knplabs/knp-paginator-bundle" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="8.2">

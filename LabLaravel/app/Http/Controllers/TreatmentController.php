@@ -3,72 +3,86 @@
 namespace App\Http\Controllers;
 
 use App\Models\Treatment;
-use App\Models\Patient;
-use App\Models\Doctor;
+use App\Models\Diagnose;
 use Illuminate\Http\Request;
 
 class TreatmentController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $treatments = Treatment::all();
-        return view('treatments.index', compact('treatments'));
-    }
+        $query = Treatment::with('diagnose');
 
-    public function create()
-    {
-        $patients = Patient::all();
-        $doctors = Doctor::all();
-        return view('treatments.create', compact('patients', 'doctors')); // Передаємо лікарів у шаблон
+        if ($request->has('name') && $request->name) {
+            $query->where('name', 'like', '%' . $request->name . '%');
+        }
+
+        $treatments = $query->paginate($request->get('itemsPerPage', 10));  // За замовчуванням 10 елементів на сторінці
+
+        return view('treatments.index', compact('treatments'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'treatment_name' => 'required|string|max:255',
-            'patient_id' => 'required|exists:patients,id',
-            'doctor_id' => 'required|exists:doctors,id',
-            'date' => 'required|date',
+            'name' => 'required|string|max:255',
+            'instructions' => 'nullable|string',
+            'diagnosis_id' => 'required|exists:diagnoses,id',
+            'description' => 'nullable|string',
         ]);
 
-        Treatment::create($request->all());
+        $treatment = Treatment::create([
+            'name' => $request->name,
+            'instructions' => $request->instructions,
+            'diagnosis_id' => $request->diagnosis_id,
+            'description' => $request->description,
+        ]);
 
-        return redirect()->route('treatments.index');
+        return redirect()->route('treatments.index')->with('success', 'Лікування створено');
     }
 
     public function show($id)
     {
-        $treatment = Treatment::findOrFail($id);
-        return view('treatments.show', compact('treatment'));
+        // Завантажуємо Treatment по ID разом з діагнозом
+        $treatment = Treatment::with('diagnose')->findOrFail($id);
+        return response()->json($treatment);
     }
 
-    public function edit($id)
+    public function create()
     {
-        $treatment = Treatment::findOrFail($id);
-        $patients = Patient::all();
-        $doctors = Doctor::all();
-        return view('treatments.edit', compact('treatment', 'patients', 'doctors'));
+        // Отримуємо всі діагнози для випадаючого списку
+        $diagnoses = Diagnose::all();
+
+        return view('treatments.create', compact('diagnoses'));
     }
 
     public function update(Request $request, $id)
     {
+        $treatment = Treatment::findOrFail($id);
+
+        // Валідні дані для оновлення Treatment
         $request->validate([
-            'treatment_name' => 'required|string|max:255',
-            'patient_id' => 'required|exists:patients,id',
-            'doctor_id' => 'required|exists:doctors,id',
-            'date' => 'required|date',
+            'name' => 'required|string|max:255',
+            'instructions' => 'nullable|string',
+            'diagnosis_id' => 'required|exists:diagnoses,id',  // Перевірка на існування діагнозу
+            'description' => 'nullable|string',
         ]);
 
-        $treatment = Treatment::findOrFail($id);
-        $treatment->update($request->all());
+        $treatment->update([
+            'name' => $request->name,
+            'instructions' => $request->instructions,
+            'diagnosis_id' => $request->diagnosis_id,
+            'description' => $request->description,
+        ]);
 
-        return redirect()->route('treatments.index');
+        return redirect()->route('treatments.index')->with('success', 'Лікування оновлено');
     }
 
     public function destroy($id)
     {
-        Treatment::findOrFail($id)->delete();
-        return redirect()->route('treatments.index');
+        // Видаляємо Treatment по ID
+        $treatment = Treatment::findOrFail($id);
+        $treatment->delete();
+
+        return redirect()->route('treatments.index')->with('success', 'Лікування видалено');
     }
 }
-

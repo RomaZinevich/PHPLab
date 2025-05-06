@@ -5,17 +5,33 @@
 {% block body %}
     <h1>Treatment index</h1>
 
-    <table class="table">
+    <form method="get">
+        <div class="form-group">
+            <label for="name">Name</label>
+            <input type="text" id="name" name="name" value="{{ app.request.query.get('name') }}" class="form-control">
+        </div>
+
+        <div class="form-group">
+            <label for="instructions">Instructions</label>
+            <input type="text" id="instructions" name="instructions" value="{{ app.request.query.get('instructions') }}" class="form-control">
+        </div>
+        <div class="form-group">
+            <input type="number" name="itemsPerPage" placeholder="Items per page" value="{{ app.request.get('itemsPerPage') ?? 10 }}" class="form-control" />
+        </div>
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+
+    <table class="table mt-4">
         <thead>
-            <tr>
-                <th>Id</th>
-                <th>Name</th>
-                <th>Instructions</th>
-                <th>actions</th>
-            </tr>
+        <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Instructions</th>
+            <th>Actions</th>
+        </tr>
         </thead>
         <tbody>
-        {% for treatment in treatments %}
+        {% for treatment in pagination %}
             <tr>
                 <td>{{ treatment.id }}</td>
                 <td>{{ treatment.name }}</td>
@@ -27,11 +43,11 @@
             </tr>
         {% else %}
             <tr>
-                <td colspan="4">no records found</td>
+                <td colspan="4">No records found</td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
 
-    <a href="{{ path('app_treatment_new') }}">Create new</a>
+    <a href="{{ path('app_treatment_new') }}" class="btn btn-success mt-3">Create new</a>
 {% endblock %}

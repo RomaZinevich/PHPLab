@@ -28,14 +28,6 @@
             <label for="phone">Телефон</label>
             <input type="text" name="phone" id="phone">
         </div>
-        <div>
-            <label for="doctors">Лікарі</label>
-            <select name="doctors[]" id="doctors" multiple>
-                @foreach($doctors as $doctor)
-                    <option value="{{ $doctor->id }}">{{ $doctor->first_name }} {{ $doctor->last_name }}</option>
-                @endforeach
-            </select>
-        </div>
         <button type="submit">Зберегти</button>
     </form>
 @endsection

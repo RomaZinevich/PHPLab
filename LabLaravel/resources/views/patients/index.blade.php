@@ -1,38 +1,45 @@
 @extends('layouts.app')
 
 @section('content')
-    <h1>Пацієнти</h1>
+    <div class="container">
+        <h1>Patients</h1>
 
-    <a href="{{ route('patients.create') }}" class="btn btn-primary">Створити нового пацієнта</a>
+        <form method="get" class="mb-4">
+            <input type="text" name="name" placeholder="Search by name" value="{{ request('name') }}">
+            <input type="number" name="itemsPerPage" placeholder="Items per page" value="{{ request('itemsPerPage', 10) }}">
+            <button type="submit">Filter</button>
+        </form>
 
-    <table class="table">
-        <thead>
-        <tr>
-            <th>Ім'я</th>
-            <th>Прізвище</th>
-            <th>Дата народження</th>
-            <th>Телефон</th>
-            <th>Дії</th>
-        </tr>
-        </thead>
-        <tbody>
-        @foreach($patients as $patient)
+        <table class="table">
+            <thead>
             <tr>
-                <td>{{ $patient->first_name }}</td>
-                <td>{{ $patient->last_name }}</td>
-                <td>{{ $patient->birth_date }}</td>
-                <td>{{ $patient->phone }}</td>
-                <td>
-                    <a href="{{ route('patients.show', $patient->id) }}" class="btn btn-info">Переглянути</a>
-                    <a href="{{ route('patients.edit', $patient->id) }}" class="btn btn-warning">Редагувати</a>
-                    <form action="{{ route('patients.destroy', $patient->id) }}" method="POST" style="display:inline;">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn btn-danger">Видалити</button>
-                    </form>
-                </td>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Actions</th>
             </tr>
-        @endforeach
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+            @forelse($patients as $patient)
+                <tr>
+                    <td>{{ $patient->id }}</td>
+                    <td>{{ $patient->name }}</td>
+                    <td>{{ $patient->email }}</td>
+                    <td>
+                        <a href="{{ route('patients.show', $patient) }}">Show</a>
+                        <a href="{{ route('patients.edit', $patient) }}">Edit</a>
+                    </td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="4">No records found.</td>
+                </tr>
+            @endforelse
+            </tbody>
+        </table>
+
+        <div class="pagination">
+            {{ $patients->withQueryString()->links() }}
+        </div>
+    </div>
 @endsection

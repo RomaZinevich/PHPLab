@@ -5,8 +5,8 @@
     <form method="POST" action="{{ route('appointments.store') }}">
         @csrf
         <div class="form-group">
-            <label for="appointment_date">Дата прийому:</label>
-            <input type="datetime-local" name="appointment_date" id="appointment_date" class="form-control" required>
+            <label for="appointment_time">Дата і час прийому:</label>
+            <input type="datetime-local" name="appointment_time" id="appointment_time" class="form-control" required>
         </div>
 
         <div class="form-group">
@@ -28,6 +28,11 @@
         </div>
 
         <div class="form-group">
+            <label for="description">Опис (необов’язково):</label>
+            <textarea name="description" id="description" class="form-control"></textarea>
+        </div>
+
+        <div class="form-group mt-3">
             <button type="submit" class="btn btn-primary">Записати на прийом</button>
         </div>
     </form>

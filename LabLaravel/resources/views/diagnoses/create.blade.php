@@ -5,31 +5,17 @@
     <form method="POST" action="{{ route('diagnoses.store') }}">
         @csrf
         <div class="form-group">
-            <label for="name">Назва діагнозу:</label>
-            <input type="text" name="diagnosis_name" id="name" class="form-control" required>
-        </div>
-
-        <div class="form-group">
-            <label for="patient_id">Пацієнт:</label>
-            <select name="patient_id" id="patient_id" class="form-control" required>
-                @foreach($patients as $patient)
-                    <option value="{{ $patient->id }}">{{ $patient->first_name }} {{ $patient->last_name }}</option>
+            <label for="appointment_id">Прийом:</label>
+            <select name="appointment_id" id="appointment_id" class="form-control" required>
+                @foreach($appointments as $appointment)
+                    <option value="{{ $appointment->id }}">{{ $appointment->patient->first_name }} {{ $appointment->patient->last_name }} - {{ $appointment->doctor->first_name }} {{ $appointment->doctor->last_name }}</option>
                 @endforeach
             </select>
         </div>
 
         <div class="form-group">
-            <label for="doctor_id">Лікар:</label>
-            <select name="doctor_id" id="doctor_id" class="form-control" required>
-                @foreach($doctors as $doctor)
-                    <option value="{{ $doctor->id }}">{{ $doctor->first_name }} {{ $doctor->last_name }}</option>
-                @endforeach
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label for="date">Дата постановки діагнозу:</label>
-            <input type="date" name="date" id="date" class="form-control" required>
+            <label for="description">Опис діагнозу:</label>
+            <textarea name="description" id="description" class="form-control" required></textarea>
         </div>
 
         <div class="form-group">

@@ -7,6 +7,7 @@ use App\Form\DoctorForm;
 use App\Repository\DoctorRepository;
 use App\Repository\PatientRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,10 +17,38 @@ use Symfony\Component\Routing\Annotation\Route;
 final class DoctorController extends AbstractController
 {
     #[Route(name: 'app_doctor_index', methods: ['GET'])]
-    public function index(DoctorRepository $doctorRepository): Response
+    public function index(Request $request, DoctorRepository $doctorRepository, PaginatorInterface $paginator): Response
     {
+        $queryBuilder = $doctorRepository->createQueryBuilder('d');
+
+        if ($firstName = $request->query->get('firstName')) {
+            $queryBuilder->andWhere('d.firstName LIKE :firstName')
+                ->setParameter('firstName', '%' . $firstName . '%');
+        }
+
+        if ($lastName = $request->query->get('lastName')) {
+            $queryBuilder->andWhere('d.lastName LIKE :lastName')
+                ->setParameter('lastName', '%' . $lastName . '%');
+        }
+
+        if ($specialization = $request->query->get('specialization')) {
+            $queryBuilder->andWhere('d.specialization LIKE :specialization')
+                ->setParameter('specialization', '%' . $specialization . '%');
+        }
+
+        if ($phone = $request->query->get('phone')) {
+            $queryBuilder->andWhere('d.phone LIKE :phone')
+                ->setParameter('phone', '%' . $phone . '%');
+        }
+
+        $pagination = $paginator->paginate(
+            $queryBuilder->getQuery(),
+            $request->query->getInt('page', 1),
+            $request->query->getInt('itemsPerPage', 10)
+        );
+
         return $this->render('doctor/index.html.twig', [
-            'doctors' => $doctorRepository->findAll(),
+            'pagination' => $pagination,
         ]);
     }
 

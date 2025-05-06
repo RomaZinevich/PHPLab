@@ -3,34 +3,47 @@
 namespace App\Http\Controllers;
 
 use App\Models\Diagnosis;
-use App\Models\Patient;
-use App\Models\Doctor; // Додаємо модель для лікарів
+use App\Models\Appointment; // Додаємо модель для прийомів
 use Illuminate\Http\Request;
 
 class DiagnosisController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $diagnoses = Diagnosis::all();
-        return view('diagnoses.index', compact('diagnoses'));
+        $query = Diagnosis::query();
+
+        if ($request->has('description')) {
+            $query->where('description', 'like', '%' . $request->description . '%');
+        }
+
+        if ($request->has('appointment_id')) {
+            $query->where('appointment_id', $request->appointment_id);
+        }
+
+        $diagnoses = $query->with(['appointment'])->paginate($request->input('itemsPerPage', 10));
+
+        $appointments = Appointment::all();
+
+        return view('diagnoses.index', compact('diagnoses', 'appointments'));
     }
 
     public function create()
     {
-        $patients = Patient::all();
-        $doctors = Doctor::all();
-        return view('diagnoses.create', compact('patients', 'doctors')); // Передаємо лікарів у представлення
+        $appointments = Appointment::all();
+        return view('diagnoses.create', compact('appointments'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'diagnosis_name' => 'required|string|max:255',
-            'patient_id' => 'required|exists:patients,id',
-            'date' => 'required|date',
+            'appointment_id' => 'required|exists:appointments,id',
+            'description' => 'required|string|max:255',
         ]);
 
-        Diagnosis::create($request->all());
+        Diagnosis::create([
+            'appointment_id' => $request->appointment_id,
+            'description' => $request->description,
+        ]);
 
         return redirect()->route('diagnoses.index');
     }
@@ -44,21 +57,22 @@ class DiagnosisController extends Controller
     public function edit($id)
     {
         $diagnosis = Diagnosis::findOrFail($id);
-        $patients = Patient::all();
-        $doctors = Doctor::all();
-        return view('diagnoses.edit', compact('diagnosis', 'patients', 'doctors')); // Передаємо лікарів у представлення
+        $appointments = Appointment::all();
+        return view('diagnoses.edit', compact('diagnosis', 'appointments'));
     }
 
     public function update(Request $request, $id)
     {
         $request->validate([
-            'diagnosis_name' => 'required|string|max:255',
-            'patient_id' => 'required|exists:patients,id',
-            'date' => 'required|date',
+            'appointment_id' => 'required|exists:appointments,id',
+            'description' => 'required|string|max:255',
         ]);
 
         $diagnosis = Diagnosis::findOrFail($id);
-        $diagnosis->update($request->all());
+        $diagnosis->update([
+            'appointment_id' => $request->appointment_id,
+            'description' => $request->description,
+        ]);
 
         return redirect()->route('diagnoses.index');
     }

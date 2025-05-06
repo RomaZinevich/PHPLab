@@ -6,6 +6,7 @@ use App\Entity\Treatment;
 use App\Form\TreatmentForm;
 use App\Repository\TreatmentRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,10 +16,31 @@ use Symfony\Component\Routing\Attribute\Route;
 final class TreatmentController extends AbstractController
 {
     #[Route(name: 'app_treatment_index', methods: ['GET'])]
-    public function index(TreatmentRepository $treatmentRepository): Response
+    public function index(Request $request, TreatmentRepository $treatmentRepository, PaginatorInterface $paginator): Response
     {
+        $queryBuilder = $treatmentRepository->createQueryBuilder('t');
+
+        $name = $request->query->get('name');
+        $instructions = $request->query->get('instructions');
+
+        if ($name) {
+            $queryBuilder->andWhere('t.name LIKE :name')
+                ->setParameter('name', '%' . $name . '%');
+        }
+
+        if ($instructions) {
+            $queryBuilder->andWhere('t.instructions LIKE :instructions')
+                ->setParameter('instructions', '%' . $instructions . '%');
+        }
+
+        $pagination = $paginator->paginate(
+            $queryBuilder->getQuery(),
+            $request->query->getInt('page', 1),
+            $request->query->getInt('itemsPerPage', 10)
+        );
+
         return $this->render('treatment/index.html.twig', [
-            'treatments' => $treatmentRepository->findAll(),
+            'pagination' => $pagination,
         ]);
     }
 

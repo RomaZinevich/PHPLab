@@ -3,9 +3,20 @@
 @section('content')
     <h1>Список лікарів</h1>
 
-    <a href="{{ route('doctors.create') }}" class="btn btn-primary">Створити нового лікаря</a>
+    <!-- Форма для фільтрації лікарів за ім'ям чи прізвищем -->
+    <form method="GET" action="{{ route('doctors.index') }}" class="mb-4">
+        <div class="form-group">
+            <label for="name">Пошук за іменем чи прізвищем:</label>
+            <input type="text" name="name" id="name" class="form-control" value="{{ request('name') }}">
+        </div>
+        <input type="number" name="itemsPerPage" placeholder="Items per page" value="{{ request('itemsPerPage', 10) }}">
+        <button type="submit" class="btn btn-primary">Фільтрувати</button>
+    </form>
 
-    <table class="table">
+    <a href="{{ route('doctors.create') }}" class="btn btn-primary mb-4">Створити нового лікаря</a>
+
+    <!-- Таблиця лікарів -->
+    <table class="table mt-4">
         <thead>
         <tr>
             <th>Ім'я</th>
@@ -35,4 +46,9 @@
         @endforeach
         </tbody>
     </table>
+
+    <!-- Пагінація -->
+    <div class="d-flex justify-content-center">
+        {{ $doctors->withQueryString()->links('pagination::bootstrap-4') }}
+    </div>
 @endsection

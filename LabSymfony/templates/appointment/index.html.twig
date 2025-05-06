@@ -5,19 +5,26 @@
 {% block body %}
     <h1>Appointment index</h1>
 
+    <form method="get" class="mb-4">
+        <div class="form-group mt-2">
+            <input type="number" name="itemsPerPage" placeholder="Items per page" value="{{ app.request.query.get('itemsPerPage') ?? 10 }}" class="form-control" />
+        </div>
+        <button type="submit" class="btn btn-primary mt-2">Search</button>
+    </form>
+
     <table class="table">
         <thead>
-            <tr>
-                <th>Id</th>
-                <th>AppointmentTime</th>
-                <th>actions</th>
-            </tr>
+        <tr>
+            <th>Id</th>
+            <th>Appointment Time</th>
+            <th>Actions</th>
+        </tr>
         </thead>
         <tbody>
-        {% for appointment in appointments %}
+        {% for appointment in pagination %}
             <tr>
                 <td>{{ appointment.id }}</td>
-                <td>{{ appointment.appointmentTime ? appointment.appointmentTime|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ appointment.appointmentTime|date('Y-m-d H:i') }}</td>
                 <td>
                     <a href="{{ path('app_appointment_show', {'id': appointment.id}) }}">show</a>
                     <a href="{{ path('app_appointment_edit', {'id': appointment.id}) }}">edit</a>
@@ -25,11 +32,15 @@
             </tr>
         {% else %}
             <tr>
-                <td colspan="3">no records found</td>
+                <td colspan="3">No records found</td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
 
-    <a href="{{ path('app_appointment_new') }}">Create new</a>
+    <div class="pagination">
+        {{ knp_pagination_render(pagination) }}
+    </div>
+
+    <a href="{{ path('app_appointment_new') }}" class="btn btn-success mt-3">Create new</a>
 {% endblock %}

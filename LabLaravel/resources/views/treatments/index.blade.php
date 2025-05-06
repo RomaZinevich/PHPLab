@@ -3,36 +3,45 @@
 @section('content')
     <h1>Список лікувань</h1>
 
-    <a href="{{ route('treatments.create') }}" class="btn btn-primary">Створити нове лікування</a>
+    <a href="{{ route('treatments.create') }}" class="btn btn-primary mb-3">Створити нове лікування</a>
 
-    <table class="table">
+    <form method="GET" action="{{ route('treatments.index') }}" class="mb-3">
+        <input type="text" name="name" placeholder="Пошук по назві лікування" value="{{ request('name') }}" class="form-control" />
+        <input type="number" name="itemsPerPage" placeholder="Кількість на сторінці" value="{{ request('itemsPerPage', 10) }}" class="form-control mt-2" />
+        <button type="submit" class="btn btn-secondary mt-2">Пошук</button>
+    </form>
+
+    <table class="table table-bordered">
         <thead>
         <tr>
-            <th>Пацієнт</th>
-            <th>Лікар</th>
-            <th>Опис лікування</th>
-            <th>Дата початку</th>
+            <th>Назва лікування</th>
+            <th>Інструкції</th>
+            <th>Діагноз</th>
             <th>Дії</th>
         </tr>
         </thead>
         <tbody>
-        @foreach($treatments as $treatment)
+        @forelse($treatments as $treatment)
             <tr>
-                <td>{{ $treatment->patient->first_name }} {{ $treatment->patient->last_name }}</td>
-                <td>{{ $treatment->doctor->first_name }} {{ $treatment->doctor->last_name }}</td>
-                <td>{{ $treatment->treatment_description }}</td>
-                <td>{{ $treatment->start_date }}</td>
+                <td>{{ $treatment->name }}</td>
+                <td>{{ $treatment->instructions }}</td>
+                <td>{{ $treatment->diagnose->name ?? 'Немає' }}</td>
                 <td>
-                    <a href="{{ route('treatments.show', $treatment->id) }}" class="btn btn-info">Переглянути</a>
-                    <a href="{{ route('treatments.edit', $treatment->id) }}" class="btn btn-warning">Редагувати</a>
+                    <a href="{{ route('treatments.edit', $treatment->id) }}" class="btn btn-warning btn-sm">Редагувати</a>
                     <form action="{{ route('treatments.destroy', $treatment->id) }}" method="POST" style="display:inline;">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" class="btn btn-danger">Видалити</button>
+                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Ви впевнені?')">Видалити</button>
                     </form>
                 </td>
             </tr>
-        @endforeach
+        @empty
+            <tr><td colspan="4">Немає записів</td></tr>
+        @endforelse
         </tbody>
     </table>
+
+    <div class="d-flex justify-content-center">
+        {{ $treatments->appends(request()->query())->links('pagination::bootstrap-4') }}
+    </div>
 @endsection

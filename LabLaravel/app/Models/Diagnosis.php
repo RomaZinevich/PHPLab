@@ -8,17 +8,23 @@ use Illuminate\Database\Eloquent\Model;
 class Diagnosis extends Model
 {
     use HasFactory;
+    protected $fillable = ['appointment_id', 'description'];
 
-    protected $fillable = ['name', 'patient_id', 'doctor_id'];
+    // Відношення до прийому (Appointment)
+    public function appointment()
+    {
+        return $this->belongsTo(Appointment::class);
+    }
 
+    // Якщо вам потрібен доступ до пацієнта через прийом
     public function patient()
     {
-        return $this->belongsTo(Patient::class);
+        return $this->belongsToThrough(Patient::class, Appointment::class);
     }
 
+    // Якщо вам потрібен доступ до лікаря через прийом
     public function doctor()
     {
-        return $this->belongsTo(Doctor::class);
+        return $this->belongsToThrough(Doctor::class, Appointment::class);
     }
 }
-

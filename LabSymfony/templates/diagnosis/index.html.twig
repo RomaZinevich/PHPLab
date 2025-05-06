@@ -5,31 +5,42 @@
 {% block body %}
     <h1>Diagnosis index</h1>
 
-    <table class="table">
+    <form method="get">
+        <div class="form-group">
+            <label for="description">Description</label>
+            <input type="text" id="description" name="description" value="{{ app.request.query.get('description') }}" class="form-control">
+        </div>
+        <div class="form-group">
+            <input type="number" name="itemsPerPage" placeholder="Items per page" value="{{ app.request.get('itemsPerPage') ?? 10 }}" class="form-control" />
+        </div>
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+
+    <table class="table mt-4">
         <thead>
-            <tr>
-                <th>Id</th>
-                <th>Description</th>
-                <th>actions</th>
-            </tr>
+        <tr>
+            <th>Id</th>
+            <th>Description</th>
+            <th>Actions</th>
+        </tr>
         </thead>
         <tbody>
-        {% for diagnosi in diagnoses %}
+        {% for diagnosis in pagination %}
             <tr>
-                <td>{{ diagnosi.id }}</td>
-                <td>{{ diagnosi.description }}</td>
+                <td>{{ diagnosis.id }}</td>
+                <td>{{ diagnosis.description }}</td>
                 <td>
-                    <a href="{{ path('app_diagnosis_show', {'id': diagnosi.id}) }}">show</a>
-                    <a href="{{ path('app_diagnosis_edit', {'id': diagnosi.id}) }}">edit</a>
+                    <a href="{{ path('app_diagnosis_show', {'id': diagnosis.id}) }}">show</a>
+                    <a href="{{ path('app_diagnosis_edit', {'id': diagnosis.id}) }}">edit</a>
                 </td>
             </tr>
         {% else %}
             <tr>
-                <td colspan="3">no records found</td>
+                <td colspan="3">No records found</td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
 
-    <a href="{{ path('app_diagnosis_new') }}">Create new</a>
+    <a href="{{ path('app_diagnosis_new') }}" class="btn btn-success mt-3">Create new</a>
 {% endblock %}

@@ -9,7 +9,12 @@ class Treatment extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'description', 'patient_id', 'doctor_id'];
+    protected $fillable = ['name', 'instructions', 'diagnosis_id', 'description'];
+
+    public function diagnose()
+    {
+        return $this->belongsTo(Diagnose::class, 'diagnosis_id');
+    }
 
     public function patient()
     {
@@ -21,5 +26,3 @@ class Treatment extends Model
         return $this->belongsTo(Doctor::class);
     }
 }
-
-

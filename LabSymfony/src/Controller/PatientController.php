@@ -12,15 +12,45 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Knp\Component\Pager\PaginatorInterface;
 
 #[Route('/patient')]
 final class PatientController extends AbstractController
 {
+
     #[Route(name: 'app_patient_index', methods: ['GET'])]
-    public function index(PatientRepository $patientRepository): Response
+    public function index(Request $request, PatientRepository $patientRepository, PaginatorInterface $paginator): Response
     {
+        $queryBuilder = $patientRepository->createQueryBuilder('p');
+
+        if ($firstName = $request->query->get('firstName')) {
+            $queryBuilder->andWhere('p.firstName LIKE :firstName')
+                ->setParameter('firstName', '%' . $firstName . '%');
+        }
+
+        if ($lastName = $request->query->get('lastName')) {
+            $queryBuilder->andWhere('p.lastName LIKE :lastName')
+                ->setParameter('lastName', '%' . $lastName . '%');
+        }
+
+        if ($birthdate = $request->query->get('birthDate')) {
+            $queryBuilder->andWhere('p.birthDate = :birthDate')
+                ->setParameter('birthDate', $birthdate);
+        }
+
+        if ($gender = $request->query->get('gender')) {
+            $queryBuilder->andWhere('p.gender = :gender')
+                ->setParameter('gender', $gender);
+        }
+
+        $pagination = $paginator->paginate(
+            $queryBuilder->getQuery(),
+            $request->query->getInt('page', 1),
+            $request->query->getInt('itemsPerPage', 10)
+        );
+
         return $this->render('patient/index.html.twig', [
-            'patients' => $patientRepository->findAll(),
+            'pagination' => $pagination,
         ]);
     }
 

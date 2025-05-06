@@ -7,9 +7,17 @@ use Illuminate\Http\Request;
 
 class DoctorController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $doctors = Doctor::all();
+        $query = Doctor::query();
+
+        if ($request->filled('name')) {
+            $query->where('first_name', 'like', '%' . $request->input('name') . '%')
+                ->orWhere('last_name', 'like', '%' . $request->input('name') . '%');
+        }
+
+        $doctors = $query->paginate($request->input('itemsPerPage', 10));
+
         return view('doctors.index', compact('doctors'));
     }
 
@@ -23,7 +31,8 @@ class DoctorController extends Controller
         $request->validate([
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
-            'specialty' => 'required|string|max:255',
+            'specialization' => 'required|string|max:255',
+            'phone' => 'nullable|string|max:15',
         ]);
 
         Doctor::create($request->all());
@@ -48,7 +57,8 @@ class DoctorController extends Controller
         $request->validate([
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
-            'specialty' => 'required|string|max:255',
+            'specialization' => 'required|string|max:255',
+            'phone' => 'nullable|string|max:15',
         ]);
 
         $doctor = Doctor::findOrFail($id);
